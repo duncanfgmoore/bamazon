@@ -17,7 +17,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
-  
+
     prompt();
 });
 
@@ -31,25 +31,24 @@ function prompt() {
             type: "list",
             message: "What would you like to select?",
             name: "startingQuestion",
-            choices: ["View Products for Sale", "View Low Invetory" , "Add to Inventory", "Add New Product"]
+            choices: ["View Products for Sale", "View Low Invetory", "Add to Inventory", "Add New Product"]
         }
     ])
         .then(function (response) {
 
             if (response.startingQuestion === "View Products for Sale") {
                 viewProducts();
-                
             }
 
-            if (response.startingQuestion === "View Low Invetory" ) {
+            if (response.startingQuestion === "View Low Invetory") {
                 lowInventory();
             }
 
             if (response.startingQuestion === "Add to Inventory") {
-                console.log("first choice");
+                addInventory();
             }
 
-            if (response.startingQuestion === "Add New Product" ) {
+            if (response.startingQuestion === "Add New Product") {
                 newItem();
             }
 
@@ -62,33 +61,67 @@ function prompt() {
 
 function viewProducts() {
     console.log("All current products in inventory")
-    connection.query("SELECT * from products", function(err, res){
-        if(err) throw err;
+    connection.query("SELECT * from products", function (err, res) {
+        if (err) throw err;
 
         for (var i = 0; i < res.length; i++) {
             console.log("\nID: " + res[i].item_id + "\nProduct: " + res[i].product_name + "\nPrice: $" + res[i].price + "\nQuantity: " + res[i].stock_quantity + "\n")
         };
         prompt();
     })
-    
+
 }
 
 //Set up function to view products low on inventory
 
 function lowInventory() {
 
-        console.log("Products with a low inventory");
-        connection.query("SELECT * FROM products WHERE stock_quantity < 4", function(err, res){
+    console.log("Products with a low inventory");
+    connection.query("SELECT * FROM products WHERE stock_quantity < 4", function (err, res) {
 
-            for (var i = 0; i < res.length; i++) {
-                console.log("\nID: " + res[i].item_id + "\nProduct: " + res[i].product_name + "\nPrice: $" + res[i].price + "\nQuantity: " + res[i].stock_quantity + "\n")
-            };
-        })
+        for (var i = 0; i < res.length; i++) {
+            console.log("\nID: " + res[i].item_id + "\nProduct: " + res[i].product_name + "\nPrice: $" + res[i].price + "\nQuantity: " + res[i].stock_quantity + "\n")
+        };
+    })
 };
 
 //Set up function to add more to current product stock
 
+function addInventory() {
 
+    console.log("Add more to the inventory")
+
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What item number do you with to add to?",
+            name: "item_id"
+        },
+        {
+            type: "input",
+            message: "How many would you like to add?",
+            name: "addedProduct"
+        }
+    ])
+        .then(function (response) {
+
+
+            var newInventory = connection.query(
+                "UPDATE products SET ? WHERE ?",
+                [
+                    {
+                        stock_quantity: parseInt(response.addedProduct)
+                    },
+                    {
+                        item_id: response.item_id
+                    }
+                ]
+
+            )
+            console.log(newInventory.sql);
+
+        })
+}
 
 //Set up function to add a new item
 
@@ -97,12 +130,12 @@ function newItem() {
 
     inquirer.prompt([
         {
-            type:"input",
+            type: "input",
             message: "What would you like to add?",
             name: "product_name"
         },
         {
-            type:"input",
+            type: "input",
             message: "What department is it in?",
             name: "department_name"
         },
@@ -118,7 +151,7 @@ function newItem() {
         }
 
     ])
-        .then(function (answer){
+        .then(function (answer) {
 
             var query = connection.query(
                 "INSERT INTO products SET ?",
@@ -131,7 +164,6 @@ function newItem() {
             )
             console.log(query.sql);
         })
-        
 };
 
 
