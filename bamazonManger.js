@@ -89,6 +89,9 @@ function lowInventory() {
 
 function addInventory() {
 
+    connection.query("SELECT * from products", function (err, res) {
+        if (err) throw err;
+
     console.log("Add more to the inventory")
 
     inquirer.prompt([
@@ -105,12 +108,11 @@ function addInventory() {
     ])
         .then(function (response) {
 
-
             var newInventory = connection.query(
                 "UPDATE products SET ? WHERE ?",
                 [
                     {
-                        stock_quantity: parseInt(response.addedProduct)
+                        stock_quantity: parseInt(res[response.item_id - 1].stock_quantity) + parseInt(response.addedProduct)
                     },
                     {
                         item_id: response.item_id
@@ -121,6 +123,7 @@ function addInventory() {
             console.log(newInventory.sql);
 
         })
+    })
 }
 
 //Set up function to add a new item
