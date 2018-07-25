@@ -62,6 +62,8 @@ function lookUp() {
 
                             console.log("Your order has been placed!")
 
+                            console.log("\nYour total is: $" + purchase.checkout * res[chosenItem].price);
+                            
                             var query = connection.query(
                                 "UPDATE products SET ? WHERE ?",
                                 [
@@ -75,7 +77,9 @@ function lookUp() {
                                 function (err, res) {
 
                                     console.log(query.sql);
+                                    
                                 }
+                            
                             );
 
 
