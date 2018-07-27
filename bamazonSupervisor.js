@@ -42,20 +42,20 @@ function prompt() {
             if (response.startingQuestion === "Create New Department") {
                 createDepartment();
             }
-
-           
-
         })
-
 };
 
 
-// SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
-// FROM Orders
-// INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
-
 function viewDepartment(){
+    console.log("\nA list of all the departments");
+
+    var query = "SELECT department_id AS department_id, departments.department_name AS department_name, SUM(over_head_costs) AS over_head_cost, SUM(products.product_sales) AS product_sales, SUM((products.product_sales - over_head_costs)) AS profit  FROM products INNER JOIN departments ON products.department_name = departments.department_name GROUP BY department_id ORDER BY department_id"; 
     
+    
+    connection.query(query, function (err, res) {
+
+        console.table(res);
+    })
 };
 
 
