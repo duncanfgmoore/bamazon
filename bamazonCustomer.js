@@ -68,7 +68,8 @@ function lookUp() {
                                 "UPDATE products SET ? WHERE ?",
                                 [
                                     {
-                                        stock_quantity: res[chosenItem].stock_quantity - purchase.checkout
+                                        stock_quantity: res[chosenItem].stock_quantity - purchase.checkout,
+                                        product_sales: parseInt(res[chosenItem].product_sales) + parseInt(purchase.checkout * res[chosenItem].price)
                                     },
                                     {
                                         item_id: chosenItem + 1
